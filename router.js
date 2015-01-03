@@ -7,7 +7,9 @@ function route(handle, pathname, response, postData, cookies, query){
     //Check if the handle needs a cookie
     var req_cookie = handle[pathname].prototype.reqCookie;
     var req_len = req_cookie.length;
+   
     //console.log('Required len: ' + req_len);
+    //console.log('Pathname: '+pathname);
     if( req_len == 0 ){
       handle[pathname](response, postData, cookies, query);
     }
@@ -20,7 +22,7 @@ function route(handle, pathname, response, postData, cookies, query){
          }
        }
     if ( matched < req_len ){
-      //console.log('Access denied...');
+      //console.log('Not enough cookies...');
       /*
       response.writeHead(302 ,{
         'Content-Type':'text/plain',
@@ -28,8 +30,13 @@ function route(handle, pathname, response, postData, cookies, query){
       });
       response.write('Access denied...');
       response.end
-      */
-      var gen = new blazingnode.build('302', response);
+      i*/
+      //var gen = new blazingnode.build('302', response);
+      //Redirect to the login page
+      pathname = '/login';
+
+      handle[pathname](response, postData, cookies, query);
+      
     }
     else{
       handle[pathname](response, postData, cookies, query);

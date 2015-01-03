@@ -14,5 +14,17 @@ function index(response, postData, cookies, query){
   gen.addVar('myname','licera');
   gen.generate();
 }
-index.prototype.reqCookie = [];
+index.prototype.reqCookie = ['res_user','res_group'];
 exports.index = index;
+
+/*-------------------------------------
+* Login Handler
+*
+-------------------------------------*/  
+
+function login(response, postData, cookies, query){
+  var gen = new blazingnode.render('landing', response); 
+  gen.generate();
+}
+login.prototype.reqCookie = [];
+exports.login = login;
