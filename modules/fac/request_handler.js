@@ -6,122 +6,24 @@ var sql_driver = require('../../sql_driver.js').sql_driver;
 //Include the processing of text variable in postData
 var querystring =  require('querystring');
 /*-------------------------------------
-* Index Handler
-*
--------------------------------------*/  
-
-function index(response, postData, cookies, query){
-  var mysql_driver = new sql_driver();
-  var form_arr = Array();
-  mysql_driver.adm_insert('1415_members', Array('id'),'/',function(err, resp){
-    form_arr.push(resp);
-    //mysql_driver.adm_update('1415_members', Array('id','passwd_salt','password'),{'matric':cookies['res_matric']},'/',function(err, resp){
-    mysql_driver.adm_browse('1415_members', Array('passwd_salt','password'),{},1,'/',function(err, resp){
-      var gen = new blazingnode.render('/modules/common/index', response);
-      gen.newPage('/modules/common/header');
-      gen.addVar('res_name', cookies['res_name']);
-      gen.generate();
-    });
-  });
-}
-index.prototype.reqCookie = ['res_matric','res_group','res_name'];
-exports.index = index;
-
-/*-------------------------------------
-* Login Handler
-*
--------------------------------------*/  
-
-function login(response, postData, cookies, query){
-  if(postData == '' ){
-    //GET Request
-    var gen = new blazingnode.render('/modules/common/login', response);
-    gen.newPage('/modules/common/common-login');
-    gen.addVar('error', '');
-    gen.generate();
-  }
-  else{
-    //POST Request
-    //Login Request
-    var postObj = querystring.parse(postData);
-    //Check for matric and password inputs
-    if(postObj.hasOwnProperty('res_matric') && postObj.hasOwnProperty('res_pass')){
-      var authen = new rh_auth( postObj.res_matric, postObj.res_pass );
-      authen.login(function(err, resp){
-        if(err){
-          //Login Fail
-          //Render login page with error message
-          var gen = new blazingnode.render('/modules/common/login', response);
-          gen.newPage('/modules/common/common-login');
-          gen.addVar('error', '<div id="err_msg">'+err+'</div>');
-          gen.generate();
-        }else{
-          //Set Cookies and redirect to main page
-          //console.log('Login success');
-          //console.log(resp['matric']);
-          var now_date = new Date();
-          now_date.setDate(now_date.getDate() + 1);
-          response.writeHead(302,[
-            ['Content-Type','text/html'],
-            ['Set-Cookie','res_matric='+resp['matric']+';expires='+now_date.toUTCString()],
-            ['Set-Cookie','res_name='+resp['name']+';expires='+now_date.toUTCString()],
-            ['Set-Cookie','res_group='+resp['type']+';expires='+now_date.toUTCString()],
-            ['Location','/']
-         ]);
-         response.end();
-
-        }
-      }); 
-    }
-      
-  }
-  //var gen = new blazingnode.render('/modules/common/login', response); 
-  //gen.generate();
-}
-login.prototype.reqCookie = [];
-exports.login = login;
-/*-------------------------------------
-* Logout Handler
-*
--------------------------------------*/  
-
-function logout(response, postData, cookies, query){
-    //GET Request
-          //Set Cookies and redirect to main page
-    //console.log('Logout success');
-          //console.log(resp['matric']);
-    var now_date = new Date();
-    now_date.setDate(now_date.getDate() - 2);
-    response.writeHead(302,[
-      ['Content-Type','text/html'],
-      ['Set-Cookie','res_matric=0;expires='+now_date.toUTCString()],
-      ['Set-Cookie','res_name=0;expires='+now_date.toUTCString()],
-      ['Set-Cookie','res_group=0;expires='+now_date.toUTCString()],
-      ['Location','/login']
-    ]);
-    response.end();
-}
-logout.prototype.reqCookie = [];
-exports.logout = logout;
-/*-------------------------------------
 * Register New User Handler
 *
 -------------------------------------*/  
 
-function user_register(response, postData, cookies, query){
-  console.log('User registration page');
+function admin_register(response, postData, cookies, query){
+  console.log('Add new facility page');
   var mysql_driver = new sql_driver();
 
   if(postData == '' ){
     //GET Request
     var form_arr = Array();
-    mysql_driver.adm_insert('1415_members', Array('id'),'/user/register',function(err, resp){
-      var gen = new blazingnode.render('/modules/common/user', response);
-      gen.newPage('/modules/common/header');
+    mysql_driver.adm_insert('fac_available', Array('id'),'/admin/fac/register',function(err, resp){
+      var gen = new blazingnode.render('/modules/common/admin', response);
+      gen.newPage('/modules/common/admin-header');
       gen.addVar('res_name', cookies['res_name']);
-      gen.newPage('/modules/common/user');
-      gen.addVar('user_content', '%b% /modules/common/user-register %b%');
-      gen.newPage('/modules/common/user-register');
+      gen.newPage('/modules/common/admin-content');
+      gen.addVar('user_content', '%b% /modules/fac/admin-register %b%');
+      gen.newPage('/modules/common/admin-register');
       gen.addVar('form_res_new', resp);
       gen.generate();
     });
@@ -168,8 +70,8 @@ function user_register(response, postData, cookies, query){
     });
   }
 }
-user_register.prototype.reqCookie = ['res_matric','res_name','res_group'];
-exports.user_register = user_register;
+admin_register.prototype.reqCookie = ['res_matric','res_name','res_group'];
+exports.admin_register = admin_register;
 
 /*-------------------------------------
 *Update Existing User Handler
