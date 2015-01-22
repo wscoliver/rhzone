@@ -94,6 +94,27 @@ auth.prototype = {
         
       });
   },
+
+/********************************************************************
+  Reset  password User Function
+********************************************************************/
+  reset_user: function(matric, pass, cbfn){
+
+    var mysql_driver = new sql_driver();
+    mysql_driver.select(Array('id'),'1415_members',{'matric': matric},
+      function(err, res){
+        //For each resident, update the new passwd_salt and password
+          var user_id = res[0]['id'];
+          //console.log(user_id);
+          var user_pass = pass;
+          //Get UNIX time
+          var user_salt = md5(Date.now());
+          var user_hash = md5(user_pass+user_salt);
+          mysql_driver.update({'password':user_hash,'passwd_salt':user_salt},
+            '1415_members',{'id':user_id}, function(err, resp){cbfn(err,resp);}); 
+        
+      });
+  },
 /********************************************************************
   Getters and Setters
 ********************************************************************/
