@@ -161,15 +161,18 @@ sql_driver.prototype = {
     var i =0;
     for ( var k in columns){
         if(columns.hasOwnProperty(k)){
-          if(i==0){
-            cols+=k;
-//Check type of value
-            var val = typeof(columns[k]) == 'number' ? columns[k] : "'"+columns[k]+"'";
-            vals+=val;
-          }else{
-            cols+=', '+k;
-            var val = typeof(columns[k]) == 'number' ? columns[k] : "'"+columns[k]+"'";
-            vals+=','+val;
+          if( k != 'gth'){
+
+            //Check type of value
+            if(i==0){
+              cols+=k;
+              var val = typeof(columns[k]) == 'number' ? columns[k] : "'"+columns[k]+"'";
+              vals+=val;
+            }else{
+              cols+=', '+k;
+              var val = typeof(columns[k]) == 'number' ? columns[k] : "'"+columns[k]+"'";
+              vals+=','+val;
+            }
           }
           i++;
         } 
@@ -177,11 +180,15 @@ sql_driver.prototype = {
     cols+=')';
     vals+=')';
     query+=' '+cols+' VALUES '+vals;
+    
     //console.log(query);
     this.getConn().query(query,function(err,rows,fields){
-      if(err){ callback(err,null);}
-      //console.log(rows);
-      callback(null, 1);
+      if(err){ 
+        console.log(err);
+        callback(err,null);}else{
+        //console.log(rows);
+        callback(null, rows['insertId']);
+      }
  
     });
   },
