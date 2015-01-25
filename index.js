@@ -24,9 +24,10 @@ handle['/user/changepassword'] = handler_common.user_change_password;
 //Faciltiy Booking Modules
 //Admin Functions
 handle['/admin/fac/register'] = handler_fac.admin_register;
-handle['/admin/fac/update'] = handler_fac.admin_update;
+handle['/admin/fac/home'] = handler_fac.admin_home;
 handle['/admin/fac/remove'] = handler_fac.admin_remove;
-handle['/admin/fac/browse'] = handler_fac.admin_browse;
+handle['/admin/fac/timetable'] = handler_fac.admin_timetable;
+handle['/admin/fac/bookings'] = handler_fac.admin_bookings;
 
 
 //User Functions

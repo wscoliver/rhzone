@@ -78,6 +78,73 @@ sql_driver.prototype = {
   },
 
 /********************************************************************
+  Select Custom Statement
+********************************************************************/
+  select_custom: function(columns,table, conditions, orderby, callback){
+//Load default values if null
+    columns = typeof columns != 'undefined' ?columns: '*';
+    conditions = typeof conditions != 'undefined' ?conditions: ' ';
+//Form the statement
+    var query = 'SELECT ';
+    
+    if(typeof columns == 'object' && columns!='*' && columns!=null){
+      var i = 0;
+      while( i < columns.length){
+        if(i == 0){
+          query+=columns[i];
+        }else{
+          query+=','+columns[i];
+        }
+       i++;
+      }
+    }else{
+      query+='* ';
+    }
+    query+=' FROM '+table;
+    if(typeof conditions == 'object' && conditions!=null){
+//Use the WHERE CLAUSE , AND
+      var i=0;
+      for (var k in conditions){
+        if(conditions.hasOwnProperty(k)){
+          if(i==0){
+            query+=' WHERE '+k+'=';
+//Check type of value
+            var val = typeof(conditions[k]) == 'number' ? conditions[k] : "'"+conditions[k]+"'";
+            query+=val;
+          }else{
+            query+=' AND '+k+'=';
+            var val = typeof(conditions[k]) == 'number' ? conditions[k] : "'"+conditions[k]+"'";
+            query+=val;
+          }
+          i++;
+        } 
+      }
+    }
+   
+    if(typeof orderby == 'object' && orderby!=null){
+//Use the WHERE CLAUSE , AND
+      var i=0;
+      for (var k in orderby){
+        if(orderby.hasOwnProperty(k)){
+          if(i==0){
+            query+=' ORDER BY '+k+' '+orderby[k];
+          }else{
+            query+=' , '+k+' '+orderby[k];
+          }
+          i++;
+        } 
+      }
+    }
+    //console.log(query);
+    this.getConn().query(query,function(err,rows,fields){
+      if(err){ callback(err,0);}
+        callback(null, rows);
+      //console.log(rows);
+ 
+    });
+    //this.getConn().end();
+  },
+/********************************************************************
   Update Statement
 ********************************************************************/
   update: function(columns,table, conditions, callback){
